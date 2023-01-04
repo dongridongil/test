@@ -4,20 +4,25 @@ const path = require('path');
 const http = require('http');
 const server =http.createServer(app);
 const PORT = process.env.PORT||3500;
+const moment = require('moment')
 
 const socketIO = require('socket.io');
 const io = socketIO(server);
 
 app.use(express.static(path.join(__dirname, 'src')))
 
-//소켓부분
 
 
+//소켓 통신 부분
 
 io.on('connection', (socket)=>{
     socket.on('chatting', (data)=>{
-        console.log(data)
-        io.emit('test' , data  )
+        const { name , msg } = data;
+        io.emit('chatting' , {
+            name:name,
+            msg:msg,
+            time: moment(new Date()).format("h:ss A")  //현재시간
+        }  )
     })
 })
 
