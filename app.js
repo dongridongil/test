@@ -5,12 +5,18 @@ const http = require('http');
 const server =http.createServer(app);
 const PORT = process.env.PORT||3500;
 const moment = require('moment')
-
+const cors = require("cors");
 const socketIO = require('socket.io');
 const io = socketIO(server);
 
 app.use(express.static(path.join(__dirname, 'src')))
 
+app.use(
+    cors({
+      origin: true,
+      credentials: true
+    })
+  );
 
 
 //소켓 통신 부분
