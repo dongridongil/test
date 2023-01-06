@@ -6,32 +6,40 @@ const server =http.createServer(app);
 const PORT = process.env.PORT||3500;
 const moment = require('moment')
 const cookieParser = require('cookie-parser');
-
+const cors = require("cors");
 const socketIO = require('socket.io');
-const io = socketIO(server , { path: '/socket.io' });
+const io = socketIO(server, {
+    path: '/socket.io',
+    cors: {
+        origin: "*",
+    },
+},
+);
 
 app.use(express.static(path.join(__dirname, 'src')))
 app.use(cookieParser());
-
-app.get('/chat', function (req, res) {
-    res.path.join(__dirname + '../../index.html');
-  });
 
 const chat = io.of('/chat');
 app.set('io', io);
 chat.on('connection' , (socket)=>{
     console.log('chat 네임스페이스 접속')
-    socket.on('connection', (socket)=>{
-        socket.on('chatting', (data)=>{
-            const { name , msg } = data;
-            io.emit('chatting' , {
-                name:name,
-                msg:msg,
-                time: moment(new Date()).format("h:ss A")  //현재시간
-            }  )
-        })
-    })
-    
+	 
+	  socket.on("test", (data) => {
+	const  name = data.name;
+	const  msg = data.msg;
+  	
+	 socket.emit("test",{
+                name,
+                msg
+				})
+
+		 
+	  })
+	socket.on("test2", (data) =>{
+           console.log(data)
+       })
+       
+   
 })
 
 
