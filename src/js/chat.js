@@ -1,5 +1,5 @@
 "use strict"
-const socket = io();
+const socket = io.connect('http://localhost:3500/chat');
 
 const nickname = document.querySelector('#nickname')
 const chatlist = document.querySelector('.chatting-list')
