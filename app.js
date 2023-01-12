@@ -2,15 +2,15 @@ const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
-// const path = require('path');
 const http = require('http');
 const server = http.createServer(app);
 
-const moment = require('moment')
-const cookieParser = require('cookie-parser');
+// const moment = require('moment')
+// const cookieParser = require('cookie-parser');
 // const cors = require("cors");
 
 const PORT = process.env.PORT || 5500;
+
 //소켓 부분
 const socketIO = require('socket.io');
 const io = socketIO(server, {
@@ -18,17 +18,21 @@ const io = socketIO(server, {
     cors: {
         origin: "*",
     },
-},
-);
+});
 
+//서버에 테스트용 정적 영상 올리기
 // app.use(express.static(path.join(__dirname, 'src')))
-app.use(cookieParser());
+app.use('/static', express.static(__dirname + '/public'));
+app.get("/", (req, res) => {
+    res.sendFile(__dirname + '/public/test.mp4')
+})
+
 
 //몽고디비연결부분
 const connect = require("./schemas");
 connect();
 
-//소켓 방.채팅창 로직부분
+///////소켓 방.채팅창 로직부분
 app.set('io', io);
 const room = io.of('/room')
 const chat = io.of('/chat');
@@ -50,20 +54,18 @@ chat.on('connection', (socket) => {
     socket.on("test", (data) => {
         const name = data.name;
         const msg = data.msg;
-        
+
         chat.emit("test", {
             name: name,
             msg: msg
         })
     })
-
-
 })
+//////////
 
 
-app.use("/", (req, res) => {
-    res.status(200).json("서버 정상 작동 합니다")
-})
+
+
 
 server.listen(PORT, () => {
     console.log(`PORT 번호 ${PORT} 으로 서버가 실행되었습니다!`)
